@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Sell Everything GH — TEST SITE (Sheet-Connected)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Archivo:wght@800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root{
+    --rose-gold:#C98A99; --rose-gold-deep:#A85E70;
+    --wine:#5E2233; --blush:#FBE7EA; --blush-soft:#FDF4F5;
+    --white:#FFFFFF; --gold-bg:#D8B24C; --gold-text:#8A6914;
+    --ink:#2B2024; --ink-soft:#7A6A6E; --momo:#FFC900;
+    --good:#3A7A4E; --warn:#A85E70;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink);background:#fff;}
+  img,svg{display:block;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;border:none;cursor:pointer;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px;}
+
+  .announce{background:linear-gradient(90deg,var(--rose-gold-deep),var(--rose-gold));color:#fff;text-align:center;font-size:13px;font-weight:700;padding:9px;}
+
+  header{position:sticky;top:0;background:rgba(255,255,255,.95);border-bottom:1px solid #F1DEE2;z-index:10;}
+  .header-row{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;max-width:1180px;margin:0 auto;}
+  .logo{font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:21px;color:var(--wine);}
+  .logo .tag{font-family:'Archivo',sans-serif;font-style:normal;font-size:10px;background:var(--wine);color:#fff;padding:3px 7px;border-radius:7px;margin-left:6px;}
+  .test-pill{font-family:'Archivo',sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.04em;background:#FFF3CD;color:#8a6914;padding:5px 11px;border-radius:999px;border:1px solid #F0DDA0;}
+
+  .hero{background:linear-gradient(160deg,var(--blush-soft),#fff 65%);padding:42px 0 32px;text-align:center;}
+  h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(26px,4vw,40px);color:var(--wine);margin:0 0 10px;line-height:1.1;}
+  h1 em{display:block;font-style:italic;font-weight:600;color:var(--rose-gold-deep);}
+  .hero p{color:var(--ink-soft);max-width:480px;margin:0 auto 22px;font-size:15px;}
+  .btn-primary{display:inline-flex;gap:8px;align-items:center;background:linear-gradient(90deg,var(--rose-gold-deep),var(--rose-gold));color:#fff;font-weight:700;font-size:14.5px;padding:14px 26px;border-radius:999px;box-shadow:0 10px 22px -10px rgba(94,34,51,.35);}
+
+  .momo-strip{background:var(--blush);text-align:center;padding:22px 0;}
+  .momo-badge{display:inline-flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--gold-bg);padding:12px 24px;border-radius:999px;font-weight:800;font-size:15px;color:var(--wine);}
+  .momo-dot{width:26px;height:26px;border-radius:50%;background:var(--momo);display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-size:10px;font-weight:800;color:#3a2e00;}
+
+  .section{padding:44px 0;}
+  .section-head{margin-bottom:8px;}
+  .section-head h2{font-family:'Fraunces',serif;font-weight:800;font-size:clamp(22px,3vw,28px);color:var(--wine);margin:0 0 4px;}
+  #sheet-status{font-size:13px;font-weight:700;margin:0 0 26px;display:flex;align-items:center;gap:7px;}
+  #sheet-status::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .card{background:#fff;border:1px solid #F4E3E6;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s;}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 26px -12px rgba(94,34,51,.2);}
+  .card.sold-out{opacity:.6;}
+  .card-media{position:relative;height:140px;background:radial-gradient(circle at 50% 35%,var(--blush-soft),var(--blush) 85%);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .card-media img{width:100%;height:100%;object-fit:cover;}
+  .ph-letter{font-family:'Fraunces',serif;font-weight:800;font-size:40px;color:var(--rose-gold-deep);opacity:.45;}
+  .ph-label{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:10px;font-weight:700;color:var(--ink-soft);background:rgba(255,255,255,.7);padding:2px 0;}
+  .tag-sticker{position:absolute;top:9px;left:-6px;background:linear-gradient(135deg,var(--gold-bg),#B98C2A);color:#3a2900;padding:5px 11px 5px 14px;font-family:'Archivo',sans-serif;font-weight:800;font-size:10px;transform:rotate(-8deg);clip-path:polygon(0 0,100% 0,100% 100%,14% 100%,0 70%);}
+  .sold-out-stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-10deg);border:3px solid var(--wine);color:var(--wine);font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;padding:4px 14px;border-radius:8px;background:rgba(255,255,255,.85);}
+  .card-body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .card-cat{font-size:10.5px;font-weight:700;color:var(--rose-gold-deep);text-transform:uppercase;letter-spacing:.04em;}
+  .card-name{font-size:14px;font-weight:700;line-height:1.3;min-height:36px;}
+  .card-qty{font-size:11px;color:var(--ink-soft);font-weight:600;}
+  .price-row{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;}
+  .price-retail{font-size:12.5px;color:var(--ink-soft);text-decoration:line-through;}
+  .price-wholesale{font-family:'Fraunces',serif;font-weight:800;font-size:18px;color:var(--gold-text);}
+  .save-pill{margin-left:auto;font-size:10.5px;font-weight:800;color:var(--wine);background:var(--blush);padding:3px 7px;border-radius:7px;}
+  .add-cart-btn{margin-top:auto;width:100%;background:var(--blush-soft);border:1.5px solid var(--rose-gold);color:var(--wine);font-weight:700;font-size:13px;padding:10px;border-radius:10px;}
+  .add-cart-btn:hover{background:var(--rose-gold);color:#fff;}
+  .add-cart-btn:disabled{background:#f0eaea;border-color:#ddd;color:#aaa;cursor:not-allowed;}
+
+  footer{background:var(--ink);color:#cdb9bc;text-align:center;padding:26px;font-size:12.5px;margin-top:10px;}
+
+  @media (max-width:980px){.grid{grid-template-columns:repeat(3,1fr);}}
+  @media (max-width:700px){.grid{grid-template-columns:repeat(2,1fr);} .header-row{flex-wrap:wrap;gap:8px;}}
+  @media (max-width:420px){.grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="announce">🧪 TEST SITE — products below are loaded live from a Google Sheet, not hardcoded</div>
+
+<header>
+  <div class="header-row">
+    <a class="logo" href="#">I Sell Everything<span class="tag">GH</span></a>
+    <span class="test-pill">DEMO / TEST RUN</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Accra's #1 Wholesale<em>Beauty Supplier</em></h1>
+    <p>This is a test version of the site. The product grid below pulls directly from a Google Sheet — edit the sheet, refresh the page, see it change.</p>
+    <a href="#shop" class="btn-primary">Jump to Live Catalog ↓</a>
+  </div>
+</section>
+
+<section class="momo-strip">
+  <div class="momo-badge"><span class="momo-dot">GH₵</span> We Accept Mobile Money (MoMo)</div>
+</section>
+
+<section class="section" id="shop">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Weekly Best Sellers</h2>
+    </div>
+    <p id="sheet-status" style="color:#999;">Loading products…</p>
+    <div class="grid" id="product-grid"></div>
+  </div>
+</section>
+
+<footer>Test build — not for real customers yet. Built for I Sell Everything GH.</footer>
+
+<script>
+/* ============================================================
+   STEP 1 — Paste your published Google Sheet CSV link below.
+   (See the setup guide in chat for how to get this link.)
+   Leave it as-is to keep seeing sample/demo data.
+============================================================ */
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT59YQoZd68EGVd18hy_t9iOu_9X_8gbTpv_QQssZ9cHYHgHGjEi01ycmStWSIYbxAaHPCaYPRBQO_I/pub?gid=0&single=true&output=csv";
+
+/* Sample data used automatically until a real sheet link is added above */
+const FALLBACK_CSV = `Name,Category,Retail Price,Wholesale Price,Min Wholesale Qty,Stock,Photo URL
+Rosé Gold Hair Growth Serum,Hair Care,85,52,12,40,
+Ceramic 3-in-1 Hot Comb,Styling Tools,180,120,6,15,
+Edge Control Styling Gel,Hair Care,35,20,24,0,
+Satin Sleep Bonnet (3 Pack),Hair Care,55,32,10,60,
+Jamaican Black Castor Oil,Skin & Body,70,45,12,8,
+Premium Lace Bond Glue,Hair Care,45,28,24,0,
+Leave-In Conditioning Mist,Hair Care,60,38,12,30,
+Brazilian Hair Bundle 18",Wigs & Bundles,650,480,5,4,`;
+
+async function loadProducts(){
+  const statusEl = document.getElementById('sheet-status');
+  let csvText = FALLBACK_CSV;
+  let usingFallback = true;
+
+  const hasRealUrl = SHEET_CSV_URL && !SHEET_CSV_URL.includes('PASTE_YOUR');
+
+  if (hasRealUrl) {
+    try {
+      const res = await fetch(SHEET_CSV_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error('Sheet fetch failed: ' + res.status);
+      csvText = await res.text();
+      usingFallback = false;
+    } catch (err) {
+      console.warn('Could not load the Google Sheet, showing sample data instead.', err);
+    }
+  }
+
+  Papa.parse(csvText.trim(), {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results){
+      renderProducts(results.data);
+      if (usingFallback) {
+        statusEl.textContent = `Showing ${results.data.length} sample products — paste your Sheet's CSV link into SHEET_CSV_URL to go live.`;
+        statusEl.style.color = '#A85E70';
+      } else {
+        statusEl.textContent = `✓ Synced ${results.data.length} products live from your Google Sheet.`;
+        statusEl.style.color = '#3A7A4E';
+      }
+    }
+  });
+}
+
+function renderProducts(rows){
+  const grid = document.getElementById('product-grid');
+  grid.innerHTML = '';
+
+  rows.forEach(row => {
+    const name = (row['Name'] || 'Unnamed product').trim();
+    const category = (row['Category'] || '').trim();
+    const retail = parseFloat(row['Retail Price']) || 0;
+    const wholesale = parseFloat(row['Wholesale Price']) || 0;
+    const minQty = row['Min Wholesale Qty'] || '—';
+    const stockRaw = row['Stock'];
+    const stock = stockRaw === undefined || stockRaw === '' ? 1 : parseInt(stockRaw);
+    const photo = (row['Photo URL'] || '').trim();
+    const soldOut = !isNaN(stock) && stock <= 0;
+    const savePct = retail > 0 ? Math.round((1 - (wholesale / retail)) * 100) : 0;
+
+    const mediaInner = photo
+      ? `<img src="${photo}" alt="${name}" onerror="this.style.display='none'; this.parentElement.querySelector('.ph-fallback').style.display='flex';">
+         <div class="ph-fallback" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;">
+           <span class="ph-letter">${name.charAt(0).toUpperCase()}</span>
+         </div>`
+      : `<span class="ph-letter">${name.charAt(0).toUpperCase()}</span><span class="ph-label">Photo coming soon</span>`;
+
+    const card = document.createElement('div');
+    card.className = 'card' + (soldOut ? ' sold-out' : '');
+    card.innerHTML = `
+      <div class="card-media">
+        ${!soldOut && savePct > 0 ? `<span class="tag-sticker">SAVE ${savePct}%</span>` : ''}
+        ${mediaInner}
+        ${soldOut ? `<span class="sold-out-stamp">SOLD OUT</span>` : ''}
+      </div>
+      <div class="card-body">
+        <span class="card-cat">${category}</span>
+        <div class="card-name">${name}</div>
+        <div class="card-qty">Wholesale price at ${minQty}+ units</div>
+        <div class="price-row">
+          <span class="price-retail">GH₵${retail.toFixed(0)}</span>
+          <span class="price-wholesale">GH₵${wholesale.toFixed(0)}</span>
+          ${savePct > 0 ? `<span class="save-pill">-${savePct}%</span>` : ''}
+        </div>
+        <button class="add-cart-btn" ${soldOut ? 'disabled' : ''}>${soldOut ? 'Sold Out' : 'Add to Cart'}</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>
